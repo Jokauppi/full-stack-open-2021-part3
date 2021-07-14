@@ -37,11 +37,38 @@ app.get('/api/persons', (req, res) => {
 app.get('/api/persons/:id', (req, res) => {
 	const id = Number(req.params.id)
 	const person = persons.find(person => person.id === id)
-	if(person) {
+	if (person) {
 		res.json(person)
 	} else {
 		res.status(404).end()
 	}
+	logReq(req, res)
+})
+
+app.delete('/api/persons/:id', (req, res) => {
+	const id = Number(req.params.id)
+	persons = persons.filter(person => person.id !== id)
+	res.status(204).end()
+	logReq(req, res)
+})
+
+app.post('/api/persons/', (req, res) => {
+	
+	const newPerson = req.body
+	
+	if(!newPerson.name) {
+		res.status(400).json({error: 'name is missing'})
+	} else if(!newPerson.number) {
+		res.status(400).json({error: 'number is missing'})
+	} else if(persons.find(person => person.name.toLowerCase() === newPerson.name.toLowerCase())) {
+		res.status(409).json({error: 'name must be unique'})
+	} else {
+		newPerson.id = Math.floor(Math.random()*1000000000000000) + 1
+		persons = persons.concat(newPerson)
+		
+		res.json(newPerson)
+	}
+
 	logReq(req, res)
 })
 
