@@ -1,0 +1,1 @@
+{"version":3,"sources":["webpack://src/components/notification.css"],"names":[],"mappings":"AAAA,cACI,gBAAiB,CACjB,iBAAkB,CAClB,WAAY,CACZ,aAAgB,CAChB,yBAAkB,CAAlB,iBACJ","file":"main.771503b5.chunk.css","sourcesContent":[".notification {\r\n    border: 3px solid;\r\n    border-radius: 5px;\r\n    padding: 5px;\r\n    margin: 10px 0px;\r\n    width: max-content;\r\n}"]}

@@ -1,0 +1,56 @@
+// 3.1 Get whole list
+GET http://rocky-dawn-60745.herokuapp.com/api/persons
+
+###
+// 3.2 Get info screen
+GET http://rocky-dawn-60745.herokuapp.com/api/info
+
+###
+// 3.3 Get specified person
+GET http://rocky-dawn-60745.herokuapp.com/api/persons/1
+
+###
+// 3.3 Get a non-existent person (response 404)
+GET http://rocky-dawn-60745.herokuapp.com/api/persons/1234
+
+###
+// 3.4 Delete specified person
+DELETE http://rocky-dawn-60745.herokuapp.com/api/persons/2
+
+###
+// 3.5 Post a new person
+POST  http://rocky-dawn-60745.herokuapp.com/api/persons
+Content-Type: application/json
+
+{
+    "name": "test",
+    "number": "123456789"
+}
+
+###
+// 3.6 Posting a person without a name (response 400)
+POST  http://rocky-dawn-60745.herokuapp.com/api/persons
+Content-Type: application/json
+
+{
+    "number": "1234-1234"
+}
+
+###
+// 3.6 Posting a person without a number (response 400)
+POST  http://rocky-dawn-60745.herokuapp.com/api/persons
+Content-Type: application/json
+
+{
+    "name": "Matti Meikäläinen"
+}
+
+###
+// 3.6 Posting a person that is already in the database (response 409)
+POST  http://rocky-dawn-60745.herokuapp.com/api/persons
+Content-Type: application/json
+
+{
+    "name": "Matti Meikäläinen",
+    "number": "1234-1234"
+}
