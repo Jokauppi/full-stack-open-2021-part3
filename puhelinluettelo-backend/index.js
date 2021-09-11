@@ -17,25 +17,18 @@ morgan.token('person', (req, res) => {
 })
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :person'))
 
-let persons = []
-Person.find({}).then(result => persons = result)
-
 app.get('/api/info', (req, res) => {
 	res.send(`<p>Phonebook has info for ${persons.length} people</p><p>${Date()}</p>`)
 })
 
 app.get('/api/persons', (req, res) => {
-	res.json(persons)
+	Person.find({}).then(result => res.json(result))
 })
 
 app.get('/api/persons/:id', (req, res) => {
-	const id = req.params.id
-	const person = persons.find(person => person.id === id)
-	if (person) {
-		res.json(person)
-	} else {
-		res.status(404).end()
-	}
+	Person.find({_id: req.params.id}).then(result => {
+		res.json(result[0])
+	}).catch(error => res.status(404).end())
 })
 
 app.delete('/api/persons/:id', (req, res) => {
@@ -52,13 +45,13 @@ app.post('/api/persons/', (req, res) => {
 		res.status(400).json({ error: 'name is missing' })
 	} else if (!newPerson.number) {
 		res.status(400).json({ error: 'number is missing' })
-	} else if (persons.find(person => person.name.toLowerCase() === newPerson.name.toLowerCase())) {
+	} /*else if (persons.find(person => person.name.toLowerCase() === newPerson.name.toLowerCase())) {
 		res.status(409).json({ error: 'name must be unique' })
-	} else {
+	} */else {
 		newPerson.id = Math.floor(Math.random() * 1000000000000000) + 1
-		persons = persons.concat(newPerson)
-
-		res.json(newPerson)
+		new Person(newPerson).save().then(result => {
+			res.json(newPerson)
+		})
 	}
 })
 
