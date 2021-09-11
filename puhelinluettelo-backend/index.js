@@ -1,3 +1,4 @@
+require('dotenv').config()
 const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
@@ -16,7 +17,8 @@ morgan.token('person', (req, res) => {
 })
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :person'))
 
-let persons = Person.find({})
+let persons = []
+Person.find({}).then(result => persons = result)
 
 app.get('/api/info', (req, res) => {
 	res.send(`<p>Phonebook has info for ${persons.length} people</p><p>${Date()}</p>`)
@@ -27,7 +29,7 @@ app.get('/api/persons', (req, res) => {
 })
 
 app.get('/api/persons/:id', (req, res) => {
-	const id = Number(req.params.id)
+	const id = req.params.id
 	const person = persons.find(person => person.id === id)
 	if (person) {
 		res.json(person)

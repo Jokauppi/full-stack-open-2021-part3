@@ -7,7 +7,7 @@ mongoose.connect(dbUrl, { useNewUrlParser: true, useUnifiedTopology: true, useFi
         console.log('database connected');
     })
     .catch((error) => {
-        console.log('database connection failed' + error);
+        console.log('database connection failed\n' + error);
     })
 
 const personSchema = new mongoose.Schema({
