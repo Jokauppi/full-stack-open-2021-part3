@@ -61,6 +61,24 @@ app.post('/api/persons/', (req, res, next) => {
 	}
 })
 
+app.put('/api/persons/:id', (req, res, next) => {
+
+	const updatedPerson = { ...req.body }
+
+	if (!updatedPerson.name) {
+		next({ name:'MissingInfoError', message: 'name is missing' })
+	} else if (!updatedPerson.number) {
+		next({ name:'MissingInfoError', message: 'number is missing' })
+	} else {
+		Person.findByIdAndUpdate(req.params.id, updatedPerson, { new: true })
+			.then(person => {
+				res.json(person)
+			})
+			.catch(error => next(error))
+	}
+
+})
+
 const errorHandler = (err, req, res, next) => {
 	console.error(err.message)
 
