@@ -18,11 +18,13 @@ morgan.token('person', (req, res) => {
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :person'))
 
 app.get('/api/info', (req, res) => {
-	res.send(`<p>Phonebook has info for ${persons.length} people</p><p>${Date()}</p>`)
+	Person.find({}).then(persons => {
+		res.send(`<p>Phonebook has info for ${persons.length} people</p><p>${Date()}</p>`)
+	})
 })
 
 app.get('/api/persons', (req, res) => {
-	Person.find({}).then(person => res.json(person))
+	Person.find({}).then(persons => res.json(persons))
 })
 
 app.get('/api/persons/:id', (req, res, next) => {
