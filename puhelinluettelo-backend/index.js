@@ -36,14 +36,15 @@ app.get('/api/persons/:id', (req, res) => {
 		})
 		.catch(error => {
 			console.error(error)
-			res.status(404).end()
+			res.status(500).end()
 		})
 })
 
 app.delete('/api/persons/:id', (req, res) => {
-	const id = Number(req.params.id)
-	persons = persons.filter(person => person.id !== id)
-	res.status(204).end()
+	Person.findByIdAndRemove(req.params.id)
+		.then(result => {
+			res.status(204).end()
+		})
 })
 
 app.post('/api/persons/', (req, res) => {
