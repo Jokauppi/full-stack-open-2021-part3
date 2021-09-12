@@ -22,13 +22,22 @@ app.get('/api/info', (req, res) => {
 })
 
 app.get('/api/persons', (req, res) => {
-	Person.find({}).then(result => res.json(result))
+	Person.find({}).then(person => res.json(person))
 })
 
 app.get('/api/persons/:id', (req, res) => {
-	Person.find({_id: req.params.id}).then(result => {
-		res.json(result[0])
-	}).catch(error => res.status(404).end())
+	Person.findById(req.params.id)
+		.then(person => {
+			if (person) {
+				res.json(person)
+			} else {
+				res.status(404).end()
+			}
+		})
+		.catch(error => {
+			console.error(error)
+			res.status(404).end()
+		})
 })
 
 app.delete('/api/persons/:id', (req, res) => {
