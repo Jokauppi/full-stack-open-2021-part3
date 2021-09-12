@@ -25,7 +25,7 @@ app.get('/api/persons', (req, res) => {
 	Person.find({}).then(person => res.json(person))
 })
 
-app.get('/api/persons/:id', (req, res) => {
+app.get('/api/persons/:id', (req, res, next) => {
 	Person.findById(req.params.id)
 		.then(person => {
 			if (person) {
@@ -34,36 +34,46 @@ app.get('/api/persons/:id', (req, res) => {
 				res.status(404).end()
 			}
 		})
-		.catch(error => {
-			console.error(error)
-			res.status(500).end()
-		})
+		.catch(error => next(error))
 })
 
-app.delete('/api/persons/:id', (req, res) => {
+app.delete('/api/persons/:id', (req, res, next) => {
 	Person.findByIdAndRemove(req.params.id)
 		.then(result => {
 			res.status(204).end()
-		})
+		}).catch(error => next(error))
 })
 
-app.post('/api/persons/', (req, res) => {
+app.post('/api/persons/', (req, res, next) => {
 
 	const newPerson = { ...req.body }
 
 	if (!newPerson.name) {
-		res.status(400).json({ error: 'name is missing' })
+		next({ name:'MissingInfoError', message: 'name is missing' })
 	} else if (!newPerson.number) {
-		res.status(400).json({ error: 'number is missing' })
+		next({ name:'MissingInfoError', message: 'number is missing' })
 	} /*else if (persons.find(person => person.name.toLowerCase() === newPerson.name.toLowerCase())) {
 		res.status(409).json({ error: 'name must be unique' })
 	} */else {
-		newPerson.id = Math.floor(Math.random() * 1000000000000000) + 1
-		new Person(newPerson).save().then(result => {
-			res.json(newPerson)
+		new Person(newPerson).save().then(person => {
+			res.json(person)
 		})
 	}
 })
+
+const errorHandler = (err, req, res, next) => {
+	console.error(err.message)
+
+	if(err.name === 'CastError') {
+		return res.status(400).send({error: 'malformatted id'})
+	} else if (err.name === 'MissingInfoError') {
+		return res.status(400).send({error: err.message})
+	}
+
+	next(err)
+}
+
+app.use(errorHandler)
 
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
