@@ -12,9 +12,17 @@ mongoose.connect(dbUrl, { useNewUrlParser: true, useUnifiedTopology: true, useFi
     })
 
 const personSchema = new mongoose.Schema({
-    name: {type: String, unique: true},
-    number: {type: String}
+    name: {type: String,
+        minLength: [3, 'Name must be at least 3 letters long'],
+        unique: [true, 'Name already exists in the phonebook'],
+        required: [true, 'Name is missing']
+    },
+    number: {type: String,
+        minLength: [8, 'Name must be at least 8 digits long'],
+        required: [true, 'Number is missing']
+    }
 })
+
 personSchema.plugin(uniqueValidator)
 
 personSchema.set('toJSON', {

@@ -5,6 +5,7 @@ const cors = require('cors')
 const Person = require('./models/person')
 
 const app = express()
+
 app.use(cors())
 app.use(express.json())
 app.use(express.static('build'))
@@ -50,35 +51,24 @@ app.post('/api/persons/', (req, res, next) => {
 
 	const newPerson = { ...req.body }
 
-	if (!newPerson.name) {
-		next({ name:'MissingInfoError', message: 'name is missing' })
-	} else if (!newPerson.number) {
-		next({ name:'MissingInfoError', message: 'number is missing' })
-	} else {
-		new Person(newPerson).save().then(person => {
-			res.json(person)
-		})
-		.catch(error => {
-			next(error)
-		})
-	}
+	new Person(newPerson).save().then(person => {
+		res.json(person)
+	})
+	.catch(error => {
+		next(error)
+	})
 })
 
 app.put('/api/persons/:id', (req, res, next) => {
 
 	const updatedPerson = { ...req.body }
 
-	if (!updatedPerson.name) {
-		next({ name:'MissingInfoError', message: 'name is missing' })
-	} else if (!updatedPerson.number) {
-		next({ name:'MissingInfoError', message: 'number is missing' })
-	} else {
-		Person.findByIdAndUpdate(req.params.id, updatedPerson, { new: true })
-			.then(person => {
-				res.json(person)
-			})
-			.catch(error => next(error))
-	}
+	Person.findByIdAndUpdate(req.params.id, updatedPerson, { new: true })
+		.then(person => {
+			res.json(person)
+		})
+		.catch(error => next(error))
+	
 
 })
 
@@ -90,14 +80,7 @@ const errorHandler = (err, req, res, next) => {
 	} else if (err.name === 'MissingInfoError') {
 		return res.status(400).send({error: err.message})
 	} else if (err.name === 'ValidationError') {
-		const type = err.errors.name.properties.type
-		//const variable = err.errors.name.properties.path
-
-		if (type === 'unique') {
-			return res.status(409).send({error: 'Name must be unique'})
-		} else {
-			return res.status(400).send({error: err.message})
-		}
+		return res.status(400).send({error: err.errors[Object.keys(err.errors)[0]].properties.message})
 	}
 
 	next(err)

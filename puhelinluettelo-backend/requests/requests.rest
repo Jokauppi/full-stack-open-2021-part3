@@ -64,3 +64,23 @@ Content-Type: application/json
     "name": "test",
     "number": "2"
 }
+
+###
+// 3.20 Post a new person with name too short
+POST  http://localhost:3001/api/persons
+Content-Type: application/json
+
+{
+    "name": "tt",
+    "number": "123456789"
+}
+
+###
+// 3.20 Post a new person with number too short
+POST  http://localhost:3001/api/persons
+Content-Type: application/json
+
+{
+    "name": "test",
+    "number": "1234"
+}
