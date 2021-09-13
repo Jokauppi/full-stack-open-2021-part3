@@ -10,7 +10,7 @@ app.use(cors())
 app.use(express.json())
 app.use(express.static('build'))
 
-morgan.token('person', (req, res) => {
+morgan.token('person', (req) => {
 	if (req.method === 'POST') {
 		return JSON.stringify(req.body)
 	}
@@ -42,9 +42,8 @@ app.get('/api/persons/:id', (req, res, next) => {
 
 app.delete('/api/persons/:id', (req, res, next) => {
 	Person.findByIdAndRemove(req.params.id)
-		.then(result => {
-			res.status(204).end()
-		}).catch(error => next(error))
+		.then(res.status(204).end())
+		.catch(error => next(error))
 })
 
 app.post('/api/persons/', (req, res, next) => {
@@ -54,9 +53,9 @@ app.post('/api/persons/', (req, res, next) => {
 	new Person(newPerson).save().then(person => {
 		res.json(person)
 	})
-	.catch(error => {
-		next(error)
-	})
+		.catch(error => {
+			next(error)
+		})
 })
 
 app.put('/api/persons/:id', (req, res, next) => {
@@ -68,7 +67,7 @@ app.put('/api/persons/:id', (req, res, next) => {
 			res.json(person)
 		})
 		.catch(error => next(error))
-	
+
 
 })
 
@@ -76,11 +75,11 @@ const errorHandler = (err, req, res, next) => {
 	console.error(err.message)
 
 	if(err.name === 'CastError') {
-		return res.status(400).send({error: 'malformatted id'})
+		return res.status(400).send({ error: 'malformatted id' })
 	} else if (err.name === 'MissingInfoError') {
-		return res.status(400).send({error: err.message})
+		return res.status(400).send({ error: err.message })
 	} else if (err.name === 'ValidationError') {
-		return res.status(400).send({error: err.errors[Object.keys(err.errors)[0]].properties.message})
+		return res.status(400).send({ error: err.errors[Object.keys(err.errors)[0]].properties.message })
 	}
 
 	next(err)
@@ -90,5 +89,5 @@ app.use(errorHandler)
 
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
-	console.log(`Server listening on port ${PORT}`);
+	console.log(`Server listening on port ${PORT}`)
 })
