@@ -54,11 +54,12 @@ app.post('/api/persons/', (req, res, next) => {
 		next({ name:'MissingInfoError', message: 'name is missing' })
 	} else if (!newPerson.number) {
 		next({ name:'MissingInfoError', message: 'number is missing' })
-	} /*else if (persons.find(person => person.name.toLowerCase() === newPerson.name.toLowerCase())) {
-		res.status(409).json({ error: 'name must be unique' })
-	} */else {
+	} else {
 		new Person(newPerson).save().then(person => {
 			res.json(person)
+		})
+		.catch(error => {
+			next(error)
 		})
 	}
 })
@@ -88,6 +89,15 @@ const errorHandler = (err, req, res, next) => {
 		return res.status(400).send({error: 'malformatted id'})
 	} else if (err.name === 'MissingInfoError') {
 		return res.status(400).send({error: err.message})
+	} else if (err.name === 'ValidationError') {
+		const type = err.errors.name.properties.type
+		//const variable = err.errors.name.properties.path
+
+		if (type === 'unique') {
+			return res.status(409).send({error: 'Name must be unique'})
+		} else {
+			return res.status(400).send({error: err.message})
+		}
 	}
 
 	next(err)
